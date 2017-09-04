@@ -64,9 +64,8 @@ public class Test {
             public int bid(PlayerRecord p, AuctionState a) {
                 getCards(a);
                 int max_bid = getMaxBid(a);
-                System.out.println(max_bid);
+                System.out.println("MAX BID: " + max_bid);
 
-                // }
                 return (int) (1 + (Math.random()*p.getCash()));
             }
 
@@ -95,6 +94,7 @@ public class Test {
                 System.out.println("MIN: " + min_card);
                 System.out.println("RANGE: " + range);
 
+                // Return the maximum we want to bid at any time for an auction
                 if (range <= 10) {
                     return 4;
                 }
