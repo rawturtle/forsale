@@ -6,6 +6,8 @@
 package forsale;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 
 /**
  *
@@ -143,23 +145,31 @@ public class Test {
                 // 2 of each cheque from 0 to 15
                 // we want to use our highest cards to get the most $$$
 
-                // rank our cards
-                // check sales range. bid a certain card based on the range
+                // Custom sorting method to rank our cards by their quality
+                Collections.sort(p.getCards(), new Comparator<Card>() {
+                    @Override public int compare(Card c1, Card c2 ) {
+                        return c1.getQuality() - c2.getQuality();
+                    }
+                });
+                System.out.println("Round: " + round);
                 
-                // ArrayList<Card> ourCards = p.getCards();
-                // for (Card card
-                // System.out.println("Our Cards: " + p.getCards())
+                String cardString ="";
+                ArrayList<Card> ourCards = p.getCards();
+                for (Card card : ourCards) {
+                    cardString += card.toString() + ": " + card.getQuality() + ", ";
+                }
+                System.out.println("Our Cards: " + cardString);
 
                 ArrayList<Integer> card = s.getChequesAvailable();
-                System.out.println("Round: " + round);
+                System.out.print("Cheques in round: ");
                 for (int c: card ) {
                     System.out.print(c + " ");
                 }
-                System.out.println();
+                System.out.println("\n-------------------------------------------\n");
                 round++;
+
                 return p.getCards().get((int) (Math.random()*p.getCards().size()));
             }
-            
         };
         
         ArrayList<Player> players = new ArrayList<Player>();
