@@ -57,16 +57,29 @@ public class Test {
             boolean fort; //26
             boolean manor; //25
 
+
+
             int i = 0;
             int x = 1;
 
+            int round = 1;
             @Override
             public int bid(PlayerRecord p, AuctionState a) {
-                getCards(a);
-                int max_bid = getMaxBid(a);
-                System.out.println("MAX BID: " + max_bid);
+                //getCards(a);
+                // System.out.println("MAX BID: " + max_bid);
 
-                return (int) (1 + (Math.random()*p.getCash()));
+                // Return our bid amount
+                return ourBid(getMaxBid(a), a, p);
+            }
+
+            public int ourBid(int max_bid, AuctionState a, PlayerRecord p) {
+                // If we have enough cash and we can bid. Do it.
+                if (a.getCurrentBid() < max_bid && p.getCash() >= max_bid) {
+                    return a.getCurrentBid() + 1;
+                } else {
+                    return 0;
+                }
+
             }
 
             public int getMaxBid(AuctionState a) {
@@ -76,8 +89,8 @@ public class Test {
                 // a.getPlayers();
                 // a.getCardsInDeck();
                 ArrayList<Card> auction = a.getCardsInAuction();
-                System.out.println(auction.toString());
-                System.out.println(auction.size());
+                // System.out.println(auction.toString());
+                // System.out.println(auction.size());
                 int max_card = 0;
                 int min_card = 30;
                 for(Card c: auction) {
@@ -90,11 +103,11 @@ public class Test {
                     }
                 }
                 int range = max_card - min_card;
-                System.out.println("MAX: " + max_card);
-                System.out.println("MIN: " + min_card);
-                System.out.println("RANGE: " + range);
+                // System.out.println("MAX: " + max_card);
+                // System.out.println("MIN: " + min_card);
+                // System.out.println("RANGE: " + range);
 
-                // Return the maximum we want to bid at any time for an auction
+                //Return the maximum we want to bid at any time for an auction
                 if (range <= 10) {
                     return 4;
                 }
@@ -127,6 +140,23 @@ public class Test {
 
             @Override
             public Card chooseCard(PlayerRecord p, SaleState s) {
+                // 2 of each cheque from 0 to 15
+                // we want to use our highest cards to get the most $$$
+
+                // rank our cards
+                // check sales range. bid a certain card based on the range
+                
+                // ArrayList<Card> ourCards = p.getCards();
+                // for (Card card
+                // System.out.println("Our Cards: " + p.getCards())
+
+                ArrayList<Integer> card = s.getChequesAvailable();
+                System.out.println("Round: " + round);
+                for (int c: card ) {
+                    System.out.print(c + " ");
+                }
+                System.out.println();
+                round++;
                 return p.getCards().get((int) (Math.random()*p.getCards().size()));
             }
             
