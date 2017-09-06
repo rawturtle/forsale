@@ -52,47 +52,29 @@ public class Test {
         };
 
         Strategy charlie = new Strategy() {
-            boolean space_station; //30
-            boolean skyscraper; //29
-            boolean castle; //28
-            boolean palace; //27
-            boolean fort; //26
-            boolean manor; //25
-
-
-
             int i = 0;
             int x = 1;
-
             int round = 1;
+
             @Override
             public int bid(PlayerRecord p, AuctionState a) {
-                //getCards(a);
-                // System.out.println("MAX BID: " + max_bid);
-
                 // Return our bid amount
                 return ourBid(getMaxBid(a), a, p);
             }
 
             public int ourBid(int max_bid, AuctionState a, PlayerRecord p) {
-                // If we have enough cash and we can bid. Do it.
-                if (a.getCurrentBid() < max_bid && p.getCash() >= max_bid) {
+                if (a.getCurrentBid() == 0) {
+                    return 2;
+                    // If we have enough cash and we can bid. Do it.
+                } else if (a.getCurrentBid() < max_bid && p.getCash() >= max_bid) {
                     return a.getCurrentBid() + 1;
                 } else {
                     return 0;
                 }
-
             }
 
             public int getMaxBid(AuctionState a) {
-                // Available methods.
-                // a.getCurrentBid();
-                // a.getPlayersInAuction();
-                // a.getPlayers();
-                // a.getCardsInDeck();
                 ArrayList<Card> auction = a.getCardsInAuction();
-                // System.out.println(auction.toString());
-                // System.out.println(auction.size());
                 int max_card = 0;
                 int min_card = 30;
                 for(Card c: auction) {
@@ -105,20 +87,17 @@ public class Test {
                     }
                 }
                 int range = max_card - min_card;
-                // System.out.println("MAX: " + max_card);
-                // System.out.println("MIN: " + min_card);
-                // System.out.println("RANGE: " + range);
 
                 //Return the maximum we want to bid at any time for an auction
                 if (range <= 10) {
-                    return 4;
+                    return 3;
                 }
                 else if (range <= 15) {
-                    return 5;
+                    return 4;
                 } else if (range <= 20) {
-                    return 6;
+                    return 5;
                 } else {
-                    return 7;
+                    return 6;
                 }
             }   
 
@@ -131,7 +110,6 @@ public class Test {
                     this.i++;
                     this.x = 1;
                 }
-                //System.out.println("CARDS IN THE AUCTION: " + auction.toString());
                 for(Card c: auction) {
                     System.out.print("Round " +i + " bid: " + x + ":\t"+ c.toString() + " " + c.getQuality() + "\n");
                 }
@@ -142,18 +120,46 @@ public class Test {
 
             @Override
             public Card chooseCard(PlayerRecord p, SaleState s) {
-                // 2 of each cheque from 0 to 15
-                // we want to use our highest cards to get the most $$$
 
-                // Custom sorting method to rank our cards by their quality
-                Collections.sort(p.getCards(), new Comparator<Card>() {
-                    @Override public int compare(Card c1, Card c2 ) {
-                        return c1.getQuality() - c2.getQuality();
+                //System.out.println("\nStart of round " + p.getCash());
+                sort_cards(p, s);
+                //print_state(p, s);
+                //System.out.println("\n----------------\n");
+
+                // If we see a 15 bid our highest card
+                if (s.getChequesAvailable().size()-1 == 15 || s.getChequesAvailable().size()-1 == 14) {
+                    return (p.getCards().get(p.getCards().size()-1));
+                }
+
+                ArrayList<Integer> availableCheques = s.getChequesAvailable();
+                int max_cheque = 0;
+                int min_cheque = 15;
+                for(int cheque: availableCheques) {
+
+                    if(cheque >= max_cheque) {
+                        max_cheque = cheque;
                     }
-                });
+                    if (cheque < min_cheque) {
+                        min_cheque = cheque;
+                    }
+                }
+                int range = max_cheque - min_cheque;
+
+                if (range <= 4) {
+                    return p.getCards().get(0);
+
+                } else if (range <= 8) {
+                    return p.getCards().get((p.getCards().size()-1)/2);
+
+                } else {
+                    return p.getCards().get(p.getCards().size()-1);
+                }
+            }
+
+            public void print_state(PlayerRecord p, SaleState s) {
                 System.out.println("Round: " + round);
-                
-                String cardString ="";
+
+                String cardString = "";
                 ArrayList<Card> ourCards = p.getCards();
                 for (Card card : ourCards) {
                     cardString += card.toString() + ": " + card.getQuality() + ", ";
@@ -165,10 +171,17 @@ public class Test {
                 for (int c: card ) {
                     System.out.print(c + " ");
                 }
-                System.out.println("\n-------------------------------------------\n");
                 round++;
+            }
 
-                return p.getCards().get((int) (Math.random()*p.getCards().size()));
+            public void sort_cards(PlayerRecord p, SaleState s) {
+                // Custom sorting method to rank our cards by their quality
+                Collections.sort(p.getCards(), new Comparator<Card>() {
+                    @Override public int compare(Card c1, Card c2 ) {
+                        return c1.getQuality() - c2.getQuality();
+                    }
+                });
+
             }
         };
         
@@ -180,7 +193,7 @@ public class Test {
         }
         GameManager g = new GameManager(players);
         g.run();
-       // System.out.println(g.getLog());
+        System.out.println(g.getLog());
     }
 
 }
